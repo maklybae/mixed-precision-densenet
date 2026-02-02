@@ -1,0 +1,5 @@
+torch
+click
+mlflow
+torchvision
+tqdm
