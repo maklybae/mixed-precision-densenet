@@ -18,10 +18,9 @@ import mlflow
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
 from tqdm import tqdm
 
+from data_utils import get_cifar10_loaders
 from densenet_quant import densenet_bc_190_40
 
 MODELS_PATH = "./models"
@@ -30,54 +29,6 @@ RESULTS_PATH = "./results"
 for path in (MODELS_PATH, RESULTS_PATH):
     if not os.path.exists(path):
         os.makedirs(path)
-
-
-def get_cifar10_loaders(batch_size: int = 128, num_workers: int = 16):
-    transform_train = transforms.Compose(
-        [
-            transforms.RandomCrop(32, padding=4),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.4914, 0.4822, 0.4465],
-                std=[0.2470, 0.2435, 0.2616],
-            ),
-        ]
-    )
-
-    transform_test = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.4914, 0.4822, 0.4465],
-                std=[0.2470, 0.2435, 0.2616],
-            ),
-        ]
-    )
-
-    train_dataset = torchvision.datasets.CIFAR10(
-        root="./data", train=True, download=True, transform=transform_train
-    )
-    test_dataset = torchvision.datasets.CIFAR10(
-        root="./data", train=False, download=True, transform=transform_test
-    )
-
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=num_workers,
-        pin_memory=True,
-    )
-    test_loader = torch.utils.data.DataLoader(
-        test_dataset,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers,
-        pin_memory=True,
-    )
-
-    return train_loader, test_loader
 
 
 def train_epoch(model, train_loader, optimizer, criterion, device, use_tqdm=True):

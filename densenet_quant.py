@@ -10,6 +10,9 @@ from typing import List, Optional, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint
+
+from dq_quantizer import init_weight_quantizer, init_activation_quantizer, UniformQuantU3
 
 
 class QDenseLayer(nn.Module):
@@ -64,7 +67,14 @@ class QDenseLayer(nn.Module):
         self.cache_mode = False
         self.reset_calibration_stats()
 
-    def forward(self, inputs: List[torch.Tensor]) -> torch.Tensor:
+        # DQ (differentiable quantization) state
+        self.dq_enabled = False
+        self.dq_w1: Optional[nn.Module] = None
+        self.dq_w2: Optional[nn.Module] = None
+        self.dq_input_act: Optional[nn.Module] = None
+        self.dq_mid_act: Optional[nn.Module] = None
+
+    def forward(self, *inputs: torch.Tensor) -> torch.Tensor:
         x = torch.cat(inputs, dim=1)
 
         out = self.bn1(x)
@@ -74,7 +84,11 @@ class QDenseLayer(nn.Module):
             self.input_min = min(self.input_min, out.min().item())
             self.input_max = max(self.input_max, out.max().item())
 
-        if self.quantize and self.input_scale is not None:
+        if self.dq_enabled and self.dq_input_act is not None:
+            out = self.dq_input_act(out)
+            w1 = self.dq_w1(self.conv1.weight)
+            out = F.conv2d(out, w1, None, stride=1)
+        elif self.quantize and self.input_scale is not None:
             out = self._quantize_activation(out, self.input_scale, self.input_offset)
             w1 = self._quantize_weights(self.conv1.weight, self.w1_scale)
             out = F.conv2d(out, w1, None, stride=1)
@@ -88,7 +102,11 @@ class QDenseLayer(nn.Module):
             self.mid_min = min(self.mid_min, out.min().item())
             self.mid_max = max(self.mid_max, out.max().item())
 
-        if self.quantize and self.mid_scale is not None:
+        if self.dq_enabled and self.dq_mid_act is not None:
+            out = self.dq_mid_act(out)
+            w2 = self.dq_w2(self.conv2.weight)
+            out = F.conv2d(out, w2, None, stride=1, padding=1)
+        elif self.quantize and self.mid_scale is not None:
             out = self._quantize_activation(out, self.mid_scale, self.mid_offset)
             w2 = self._quantize_weights(self.conv2.weight, self.w2_scale)
             out = F.conv2d(out, w2, None, stride=1, padding=1)
@@ -160,6 +178,33 @@ class QDenseLayer(nn.Module):
     def disable_quantization(self):
         self.quantize = False
 
+    def enable_dq(self, init_bitwidth: int = 4):
+        self.dq_enabled = True
+        self.quantize = False  # disable PTQ
+
+        self.dq_w1 = init_weight_quantizer(
+            self.conv1.weight, init_bitwidth=init_bitwidth,
+        )
+        self.dq_w2 = init_weight_quantizer(
+            self.conv2.weight, init_bitwidth=init_bitwidth,
+        )
+
+        act_min = self.input_min if self.input_min != float("inf") else 0.0
+        act_max = self.input_max if self.input_max != float("-inf") else 1.0
+        self.dq_input_act = init_activation_quantizer(
+            act_min=act_min, act_max=act_max, init_bitwidth=init_bitwidth,
+        )
+
+        mid_min = self.mid_min if self.mid_min != float("inf") else 0.0
+        mid_max = self.mid_max if self.mid_max != float("-inf") else 1.0
+        self.dq_mid_act = init_activation_quantizer(
+            act_min=mid_min, act_max=mid_max, init_bitwidth=init_bitwidth,
+        )
+
+    def disable_dq(self):
+        """Disable DQ, switch back to float mode."""
+        self.dq_enabled = False
+
 
 class QDenseBlock(nn.Module):
     def __init__(
@@ -169,8 +214,10 @@ class QDenseBlock(nn.Module):
         bn_size: int,
         growth_rate: int,
         drop_rate: float,
+        memory_efficient: bool = False,
     ):
         super().__init__()
+        self.memory_efficient = memory_efficient
         self.layers = nn.ModuleList()
 
         for i in range(num_layers):
@@ -186,7 +233,10 @@ class QDenseBlock(nn.Module):
         features = [init_features]
 
         for layer in self.layers:
-            new_features = layer(features)
+            if self.memory_efficient and any(f.requires_grad for f in features):
+                new_features = checkpoint(layer, *features, use_reentrant=False)
+            else:
+                new_features = layer(*features)
             features.append(new_features)
 
         return torch.cat(features, dim=1)
@@ -215,6 +265,14 @@ class QDenseBlock(nn.Module):
         for layer in self.layers:
             layer.disable_quantization()
 
+    def enable_dq(self, init_bitwidth: int = 4):
+        for layer in self.layers:
+            layer.enable_dq(init_bitwidth)
+
+    def disable_dq(self):
+        for layer in self.layers:
+            layer.disable_dq()
+
 
 class QTransition(nn.Module):
     def __init__(self, num_input_features: int, num_output_features: int):
@@ -235,6 +293,11 @@ class QTransition(nn.Module):
         self.cache_mode = False
         self.reset_calibration_stats()
 
+        # DQ (differentiable quantization) state
+        self.dq_enabled = False
+        self.dq_w: Optional[nn.Module] = None
+        self.dq_input_act: Optional[nn.Module] = None
+
     def reset_calibration_stats(self):
         self.input_min = float("inf")
         self.input_max = float("-inf")
@@ -247,7 +310,11 @@ class QTransition(nn.Module):
             self.input_min = min(self.input_min, out.min().item())
             self.input_max = max(self.input_max, out.max().item())
 
-        if self.quantize and self.input_scale is not None:
+        if self.dq_enabled and self.dq_input_act is not None:
+            out = self.dq_input_act(out)
+            w = self.dq_w(self.conv.weight)
+            out = F.conv2d(out, w, None, stride=1)
+        elif self.quantize and self.input_scale is not None:
             out = torch.fake_quantize_per_tensor_affine(
                 out,
                 self.input_scale.item(),
@@ -294,6 +361,24 @@ class QTransition(nn.Module):
     def disable_quantization(self):
         self.quantize = False
 
+    def enable_dq(self, init_bitwidth: int = 4):
+        self.dq_enabled = True
+        self.quantize = False
+
+        self.dq_w = init_weight_quantizer(
+            self.conv.weight, init_bitwidth=init_bitwidth,
+        )
+
+        act_min = self.input_min if self.input_min != float("inf") else 0.0
+        act_max = self.input_max if self.input_max != float("-inf") else 1.0
+        self.dq_input_act = init_activation_quantizer(
+            act_min=act_min, act_max=act_max, init_bitwidth=init_bitwidth,
+        )
+
+    def disable_dq(self):
+        """Disable DQ, switch back to float mode."""
+        self.dq_enabled = False
+
 
 class MyQDenseNet(nn.Module):
     """
@@ -309,6 +394,7 @@ class MyQDenseNet(nn.Module):
         drop_rate: float = 0.2,
         num_classes: int = 10,
         reduction: float = 0.5,
+        memory_efficient: bool = False,
     ):
         super().__init__()
 
@@ -331,6 +417,18 @@ class MyQDenseNet(nn.Module):
         self.first_input_min = float("inf")
         self.first_input_max = float("-inf")
 
+        # DQ (differentiable quantization) state for first layer
+        self.dq_first_enabled = False
+        self.dq_first_w: Optional[nn.Module] = None
+
+        # DQ state for classifier
+        self.dq_classifier_w: Optional[nn.Module] = None
+        self.dq_final_act: Optional[nn.Module] = None
+
+        # Cache stats for final activation (after relu_final)
+        self.final_act_min = float("inf")
+        self.final_act_max = float("-inf")
+
         self.blocks = nn.ModuleList()
         self.transitions = nn.ModuleList()
 
@@ -342,6 +440,7 @@ class MyQDenseNet(nn.Module):
                 bn_size=bn_size,
                 growth_rate=growth_rate,
                 drop_rate=drop_rate,
+                memory_efficient=memory_efficient,
             )
             self.blocks.append(block)
             num_features = num_features + num_layers * growth_rate
@@ -375,7 +474,10 @@ class MyQDenseNet(nn.Module):
             self.first_input_min = min(self.first_input_min, x.min().item())
             self.first_input_max = max(self.first_input_max, x.max().item())
 
-        if self.first_quantize and self.first_input_scale is not None:
+        if self.dq_first_enabled and self.dq_first_w is not None:
+            w_q = self.dq_first_w(self.conv0.weight)
+            out = F.conv2d(x, w_q, None, padding=1)
+        elif self.first_quantize and self.first_input_scale is not None:
             x_q = torch.fake_quantize_per_tensor_affine(
                 x,
                 self.first_input_scale.item(),
@@ -401,9 +503,22 @@ class MyQDenseNet(nn.Module):
 
         out = self.bn_final(out)
         out = self.relu_final(out)
+
+        if self.cache_mode:
+            self.final_act_min = min(self.final_act_min, out.min().item())
+            self.final_act_max = max(self.final_act_max, out.max().item())
+
+        if self.dq_first_enabled and self.dq_final_act is not None:
+            out = self.dq_final_act(out)
+
         out = self.avgpool(out)
         out = torch.flatten(out, 1)
-        out = self.classifier(out)
+
+        if self.dq_first_enabled and self.dq_classifier_w is not None:
+            w_q = self.dq_classifier_w(self.classifier.weight)
+            out = F.linear(out, w_q, self.classifier.bias)
+        else:
+            out = self.classifier(out)
 
         return out
 
@@ -460,6 +575,71 @@ class MyQDenseNet(nn.Module):
             block.disable_quantization()
         for trans in self.transitions:
             trans.disable_quantization()
+
+    def enable_dq(self, init_bitwidth: int = 4):
+        self.dq_first_enabled = True
+        self.first_quantize = False  # disable PTQ
+
+        # First layer: only quantize weights (raw input is NOT quantized per paper)
+        self.dq_first_w = init_weight_quantizer(
+            self.conv0.weight, init_bitwidth=init_bitwidth,
+        )
+
+        # Classifier weight quantizer (paper: "we quantize all layers")
+        self.dq_classifier_w = init_weight_quantizer(
+            self.classifier.weight, init_bitwidth=init_bitwidth,
+        )
+
+        # Final activation quantizer (unsigned — after relu_final, before classifier)
+        final_min = self.final_act_min if self.final_act_min != float("inf") else 0.0
+        final_max = self.final_act_max if self.final_act_max != float("-inf") else 1.0
+        self.dq_final_act = init_activation_quantizer(
+            act_min=final_min, act_max=final_max, init_bitwidth=init_bitwidth,
+        )
+
+        for block in self.blocks:
+            block.enable_dq(init_bitwidth)
+        for trans in self.transitions:
+            trans.enable_dq(init_bitwidth)
+
+    def disable_dq(self):
+        """Disable DQ, switch back to float mode."""
+        self.dq_first_enabled = False
+        for block in self.blocks:
+            block.disable_dq()
+        for trans in self.transitions:
+            trans.disable_dq()
+
+    def get_quantizer_params(self):
+        params = []
+        for module in self.modules():
+            if isinstance(module, UniformQuantU3):
+                params.extend(module.parameters())
+        return params
+
+    def get_network_params(self):
+        """Return all non-quantizer parameters (conv weights, BN, classifier)."""
+        quant_param_ids = {id(p) for p in self.get_quantizer_params()}
+        return [p for p in self.parameters() if id(p) not in quant_param_ids]
+
+    def get_bitwidths(self):
+        info = {}
+        for name, module in self.named_modules():
+            if isinstance(module, UniformQuantU3):
+                info[name] = {
+                    "bitwidth": module.bitwidth(),
+                    "d": module.d.item(),
+                    "q_max": module.q_max.item(),
+                    "signed": module.signed,
+                }
+        return info
+
+    def get_soft_bitwidths(self) -> torch.Tensor:
+        bitwidths = []
+        for module in self.modules():
+            if isinstance(module, UniformQuantU3):
+                bitwidths.append(module.bitwidth_soft())
+        return torch.stack(bitwidths)
 
     def count_parameters(self) -> int:
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
