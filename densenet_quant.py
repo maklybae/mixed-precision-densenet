@@ -56,6 +56,8 @@ class QDenseLayer(nn.Module):
 
         self.quantize = False
         self.bits = 8
+        self.w_bins: Optional[int] = None
+        self.a_bins: Optional[int] = None
 
         self.register_buffer("input_scale", None)
         self.register_buffer("input_offset", None)
@@ -81,8 +83,12 @@ class QDenseLayer(nn.Module):
         out = self.relu1(out)
 
         if self.cache_mode:
-            self.input_min = min(self.input_min, out.min().item())
-            self.input_max = max(self.input_max, out.max().item())
+            batch_min = out.min().item()
+            batch_max = out.max().item()
+            self.input_min = min(self.input_min, batch_min)
+            self.input_max = max(self.input_max, batch_max)
+            self.input_mins_list.append(batch_min)
+            self.input_maxs_list.append(batch_max)
 
         if self.dq_enabled and self.dq_input_act is not None:
             out = self.dq_input_act(out)
@@ -99,8 +105,12 @@ class QDenseLayer(nn.Module):
         out = self.relu2(out)
 
         if self.cache_mode:
-            self.mid_min = min(self.mid_min, out.min().item())
-            self.mid_max = max(self.mid_max, out.max().item())
+            batch_min = out.min().item()
+            batch_max = out.max().item()
+            self.mid_min = min(self.mid_min, batch_min)
+            self.mid_max = max(self.mid_max, batch_max)
+            self.mid_mins_list.append(batch_min)
+            self.mid_maxs_list.append(batch_max)
 
         if self.dq_enabled and self.dq_mid_act is not None:
             out = self.dq_mid_act(out)
@@ -121,17 +131,26 @@ class QDenseLayer(nn.Module):
     def _quantize_activation(
         self, x: torch.Tensor, scale: torch.Tensor, offset: torch.Tensor
     ) -> torch.Tensor:
-        """Asymmetric"""
-        q_min = 0
-        q_max = 2**self.bits - 1
+        """Asymmetric quantization for activations."""
+        if self.a_bins is not None:
+            q_min = 0
+            q_max = self.a_bins - 1
+        else:
+            q_min = 0
+            q_max = 2**self.bits - 1
         return torch.fake_quantize_per_tensor_affine(
-            x, scale.item(), offset.item(), q_min, q_max
+            x, scale.item(), int(offset.item()), q_min, q_max
         )
 
     def _quantize_weights(self, w: torch.Tensor, scale: torch.Tensor) -> torch.Tensor:
-        """Symmetric"""
-        q_min = -(2 ** (self.bits - 1))
-        q_max = 2 ** (self.bits - 1) - 1
+        """Symmetric quantization for weights."""
+        if self.w_bins is not None:
+            half = self.w_bins // 2
+            q_min = -half
+            q_max = half
+        else:
+            q_min = -(2 ** (self.bits - 1))
+            q_max = 2 ** (self.bits - 1) - 1
         return torch.fake_quantize_per_tensor_affine(w, scale.item(), 0, q_min, q_max)
 
     def reset_calibration_stats(self):
@@ -139,40 +158,82 @@ class QDenseLayer(nn.Module):
         self.input_max = float("-inf")
         self.mid_min = float("inf")
         self.mid_max = float("-inf")
+        self.input_mins_list: list[float] = []
+        self.input_maxs_list: list[float] = []
+        self.mid_mins_list: list[float] = []
+        self.mid_maxs_list: list[float] = []
 
     def calibrate(self):
         if self.input_min == float("inf"):
             return
 
         device = self.conv1.weight.device
-        qmax = 2**self.bits - 1
+
+        # Activation bins
+        if self.a_bins is not None:
+            a_qmax = self.a_bins - 1
+        else:
+            a_qmax = 2**self.bits - 1
 
         # Input quantization params
-        input_scale = max((self.input_max - self.input_min) / qmax, 1e-8)
+        input_scale = max((self.input_max - self.input_min) / a_qmax, 1e-8)
         input_offset = int(round(-self.input_min / input_scale))
 
         self.input_scale = torch.tensor([input_scale], device=device)
         self.input_offset = torch.tensor([input_offset], device=device)
 
         # Mid quantization params
-        mid_scale = max((self.mid_max - self.mid_min) / qmax, 1e-8)
+        mid_scale = max((self.mid_max - self.mid_min) / a_qmax, 1e-8)
         mid_offset = int(round(-self.mid_min / mid_scale))
 
         self.mid_scale = torch.tensor([mid_scale], device=device)
         self.mid_offset = torch.tensor([mid_offset], device=device)
 
         # Weight quantization params
-        w_qmax = 2 ** (self.bits - 1) - 1
+        if self.w_bins is not None:
+            w_qmax = self.w_bins // 2
+        else:
+            w_qmax = 2 ** (self.bits - 1) - 1
         self.w1_scale = torch.tensor(
-            [self.conv1.weight.abs().max().item() / w_qmax], device=device
+            [max(self.conv1.weight.abs().max().item() / w_qmax, 1e-8)], device=device
         )
         self.w2_scale = torch.tensor(
-            [self.conv2.weight.abs().max().item() / w_qmax], device=device
+            [max(self.conv2.weight.abs().max().item() / w_qmax, 1e-8)], device=device
         )
+
+    def set_quant_params(
+        self,
+        input_scale: torch.Tensor,
+        input_offset: torch.Tensor,
+        mid_scale: torch.Tensor,
+        mid_offset: torch.Tensor,
+        w1_scale: torch.Tensor,
+        w2_scale: torch.Tensor,
+        w_bins: int,
+        a_bins: int,
+    ):
+        """Set externally computed quantization parameters."""
+        self.input_scale = input_scale
+        self.input_offset = input_offset
+        self.mid_scale = mid_scale
+        self.mid_offset = mid_offset
+        self.w1_scale = w1_scale
+        self.w2_scale = w2_scale
+        self.w_bins = w_bins
+        self.a_bins = a_bins
 
     def enable_quantization(self, bits: int = 8):
         self.quantize = True
         self.bits = bits
+        self.w_bins = None
+        self.a_bins = None
+        self.calibrate()
+
+    def enable_quantization_bins(self, w_bins: int, a_bins: int):
+        """Enable quantization using bin counts (supports non-integer bitwidths)."""
+        self.quantize = True
+        self.w_bins = w_bins
+        self.a_bins = a_bins
         self.calibrate()
 
     def disable_quantization(self):
@@ -261,6 +322,10 @@ class QDenseBlock(nn.Module):
         for layer in self.layers:
             layer.enable_quantization(bits)
 
+    def enable_quantization_bins(self, w_bins: int, a_bins: int):
+        for layer in self.layers:
+            layer.enable_quantization_bins(w_bins, a_bins)
+
     def disable_quantization(self):
         for layer in self.layers:
             layer.disable_quantization()
@@ -286,6 +351,8 @@ class QTransition(nn.Module):
 
         self.quantize = False
         self.bits = 8
+        self.w_bins: Optional[int] = None
+        self.a_bins: Optional[int] = None
         self.register_buffer("input_scale", None)
         self.register_buffer("input_offset", None)
         self.register_buffer("w_scale", None)
@@ -301,33 +368,51 @@ class QTransition(nn.Module):
     def reset_calibration_stats(self):
         self.input_min = float("inf")
         self.input_max = float("-inf")
+        self.input_mins_list: list[float] = []
+        self.input_maxs_list: list[float] = []
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         out = self.bn(x)
         out = self.relu(out)
 
         if self.cache_mode:
-            self.input_min = min(self.input_min, out.min().item())
-            self.input_max = max(self.input_max, out.max().item())
+            batch_min = out.min().item()
+            batch_max = out.max().item()
+            self.input_min = min(self.input_min, batch_min)
+            self.input_max = max(self.input_max, batch_max)
+            self.input_mins_list.append(batch_min)
+            self.input_maxs_list.append(batch_max)
 
         if self.dq_enabled and self.dq_input_act is not None:
             out = self.dq_input_act(out)
             w = self.dq_w(self.conv.weight)
             out = F.conv2d(out, w, None, stride=1)
         elif self.quantize and self.input_scale is not None:
+            # Activation quantization
+            if self.a_bins is not None:
+                a_qmin, a_qmax = 0, self.a_bins - 1
+            else:
+                a_qmin, a_qmax = 0, 2**self.bits - 1
             out = torch.fake_quantize_per_tensor_affine(
                 out,
                 self.input_scale.item(),
-                self.input_offset.item(),
-                0,
-                2**self.bits - 1,
+                int(self.input_offset.item()),
+                a_qmin,
+                a_qmax,
             )
+            # Weight quantization
+            if self.w_bins is not None:
+                half = self.w_bins // 2
+                w_qmin, w_qmax = -half, half
+            else:
+                w_qmin = -(2 ** (self.bits - 1))
+                w_qmax = 2 ** (self.bits - 1) - 1
             w = torch.fake_quantize_per_tensor_affine(
                 self.conv.weight,
                 self.w_scale.item(),
                 0,
-                -(2 ** (self.bits - 1)),
-                2 ** (self.bits - 1) - 1,
+                w_qmin,
+                w_qmax,
             )
             out = F.conv2d(out, w, None, stride=1)
         else:
@@ -341,21 +426,54 @@ class QTransition(nn.Module):
             return
 
         device = self.conv.weight.device
-        qmax = 2**self.bits - 1
 
-        input_scale = max((self.input_max - self.input_min) / qmax, 1e-8)
+        if self.a_bins is not None:
+            a_qmax = self.a_bins - 1
+        else:
+            a_qmax = 2**self.bits - 1
+
+        input_scale = max((self.input_max - self.input_min) / a_qmax, 1e-8)
         input_offset = int(round(-self.input_min / input_scale))
 
         self.input_scale = torch.tensor([input_scale], device=device)
         self.input_offset = torch.tensor([input_offset], device=device)
+
+        if self.w_bins is not None:
+            w_qmax = self.w_bins // 2
+        else:
+            w_qmax = 2 ** (self.bits - 1) - 1
         self.w_scale = torch.tensor(
-            [self.conv.weight.abs().max().item() / (2 ** (self.bits - 1) - 1)],
+            [max(self.conv.weight.abs().max().item() / w_qmax, 1e-8)],
             device=device,
         )
+
+    def set_quant_params(
+        self,
+        input_scale: torch.Tensor,
+        input_offset: torch.Tensor,
+        w_scale: torch.Tensor,
+        w_bins: int,
+        a_bins: int,
+    ):
+        """Set externally computed quantization parameters."""
+        self.input_scale = input_scale
+        self.input_offset = input_offset
+        self.w_scale = w_scale
+        self.w_bins = w_bins
+        self.a_bins = a_bins
 
     def enable_quantization(self, bits: int = 8):
         self.quantize = True
         self.bits = bits
+        self.w_bins = None
+        self.a_bins = None
+        self.calibrate()
+
+    def enable_quantization_bins(self, w_bins: int, a_bins: int):
+        """Enable quantization using bin counts."""
+        self.quantize = True
+        self.w_bins = w_bins
+        self.a_bins = a_bins
         self.calibrate()
 
     def disable_quantization(self):
@@ -409,6 +527,8 @@ class MyQDenseNet(nn.Module):
 
         self.first_quantize = False
         self.bits = 8
+        self.first_w_bins: Optional[int] = None
+        self.first_a_bins: Optional[int] = None
         self.register_buffer("first_input_scale", None)
         self.register_buffer("first_input_offset", None)
         self.register_buffer("first_w_scale", None)
@@ -416,6 +536,8 @@ class MyQDenseNet(nn.Module):
         self.cache_mode = False
         self.first_input_min = float("inf")
         self.first_input_max = float("-inf")
+        self.first_input_mins_list: list[float] = []
+        self.first_input_maxs_list: list[float] = []
 
         # DQ (differentiable quantization) state for first layer
         self.dq_first_enabled = False
@@ -471,26 +593,42 @@ class MyQDenseNet(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         if self.cache_mode:
-            self.first_input_min = min(self.first_input_min, x.min().item())
-            self.first_input_max = max(self.first_input_max, x.max().item())
+            batch_min = x.min().item()
+            batch_max = x.max().item()
+            self.first_input_min = min(self.first_input_min, batch_min)
+            self.first_input_max = max(self.first_input_max, batch_max)
+            self.first_input_mins_list.append(batch_min)
+            self.first_input_maxs_list.append(batch_max)
 
         if self.dq_first_enabled and self.dq_first_w is not None:
             w_q = self.dq_first_w(self.conv0.weight)
             out = F.conv2d(x, w_q, None, padding=1)
         elif self.first_quantize and self.first_input_scale is not None:
+            # Activation quantization
+            if self.first_a_bins is not None:
+                a_qmin, a_qmax = 0, self.first_a_bins - 1
+            else:
+                a_qmin, a_qmax = 0, 2**self.bits - 1
             x_q = torch.fake_quantize_per_tensor_affine(
                 x,
                 self.first_input_scale.item(),
-                self.first_input_offset.item(),
-                0,
-                2**self.bits - 1,
+                int(self.first_input_offset.item()),
+                a_qmin,
+                a_qmax,
             )
+            # Weight quantization
+            if self.first_w_bins is not None:
+                half = self.first_w_bins // 2
+                w_qmin, w_qmax = -half, half
+            else:
+                w_qmin = -(2 ** (self.bits - 1))
+                w_qmax = 2 ** (self.bits - 1) - 1
             w_q = torch.fake_quantize_per_tensor_affine(
                 self.conv0.weight,
                 self.first_w_scale.item(),
                 0,
-                -(2 ** (self.bits - 1)),
-                2 ** (self.bits - 1) - 1,
+                w_qmin,
+                w_qmax,
             )
             out = F.conv2d(x_q, w_q, None, padding=1)
         else:
@@ -544,30 +682,96 @@ class MyQDenseNet(nn.Module):
         for trans in self.transitions:
             trans.calibrate()
 
+    def reset_all_calibration_stats(self):
+        """Reset calibration statistics for all layers."""
+        self.first_input_min = float("inf")
+        self.first_input_max = float("-inf")
+        self.first_input_mins_list = []
+        self.first_input_maxs_list = []
+        self.final_act_min = float("inf")
+        self.final_act_max = float("-inf")
+        for block in self.blocks:
+            block.reset_calibration_stats()
+        for trans in self.transitions:
+            trans.reset_calibration_stats()
+
     def enable_quantization(self, bits: int = 8):
         self.bits = bits
         self.first_quantize = True
+        self.first_w_bins = None
+        self.first_a_bins = None
         self._calibrate_first_layer()
         for block in self.blocks:
             block.enable_quantization(bits)
         for trans in self.transitions:
             trans.enable_quantization(bits)
 
+    def enable_quantization_bins(
+        self, w_bins: int, a_bins: int, skip_first_last: bool = True
+    ):
+        """Enable quantization with bin counts. Supports non-integer bitwidths.
+
+        Args:
+            w_bins: Number of weight quantization bins.
+            a_bins: Number of activation quantization bins.
+            skip_first_last: If True, conv0 and classifier remain in float32.
+        """
+        if not skip_first_last:
+            self.first_quantize = True
+            self.first_w_bins = w_bins
+            self.first_a_bins = a_bins
+            self._calibrate_first_layer()
+        else:
+            self.first_quantize = False
+
+        for block in self.blocks:
+            block.enable_quantization_bins(w_bins, a_bins)
+        for trans in self.transitions:
+            trans.enable_quantization_bins(w_bins, a_bins)
+
     def _calibrate_first_layer(self):
         if self.first_input_min == float("inf"):
             return
 
-        qmax = 2**self.bits - 1
-        input_scale = max((self.first_input_max - self.first_input_min) / qmax, 1e-8)
+        device = self.conv0.weight.device
+
+        # Activation range
+        if self.first_a_bins is not None:
+            a_qmax = self.first_a_bins - 1
+        else:
+            a_qmax = 2**self.bits - 1
+        input_scale = max(
+            (self.first_input_max - self.first_input_min) / a_qmax, 1e-8
+        )
         input_offset = int(round(-self.first_input_min / input_scale))
 
-        device = self.conv0.weight.device
         self.first_input_scale = torch.tensor([input_scale], device=device)
         self.first_input_offset = torch.tensor([input_offset], device=device)
+
+        # Weight range
+        if self.first_w_bins is not None:
+            w_qmax = self.first_w_bins // 2
+        else:
+            w_qmax = 2 ** (self.bits - 1) - 1
         self.first_w_scale = torch.tensor(
-            [self.conv0.weight.abs().max().item() / (2 ** (self.bits - 1) - 1)],
+            [max(self.conv0.weight.abs().max().item() / w_qmax, 1e-8)],
             device=device,
         )
+
+    def set_first_layer_params(
+        self,
+        input_scale: torch.Tensor,
+        input_offset: torch.Tensor,
+        w_scale: torch.Tensor,
+        w_bins: int,
+        a_bins: int,
+    ):
+        """Set externally computed quantization parameters for the first layer."""
+        self.first_input_scale = input_scale
+        self.first_input_offset = input_offset
+        self.first_w_scale = w_scale
+        self.first_w_bins = w_bins
+        self.first_a_bins = a_bins
 
     def disable_quantization(self):
         self.first_quantize = False
@@ -628,6 +832,7 @@ class MyQDenseNet(nn.Module):
             if isinstance(module, UniformQuantU3):
                 info[name] = {
                     "bitwidth": module.bitwidth(),
+                    "soft_bitwidth": module.bitwidth_soft().item(),
                     "d": module.d.item(),
                     "q_max": module.q_max.item(),
                     "signed": module.signed,
@@ -656,6 +861,50 @@ def densenet_bc_100_12(num_classes: int = 10, **kwargs) -> MyQDenseNet:
     )
 
 
+def densenet_bc_88_12(num_classes: int = 10, **kwargs) -> MyQDenseNet:
+    """DenseNet-BC (L=88, k=12) для CIFAR-10"""
+    return MyQDenseNet(
+        growth_rate=12,
+        block_config=(14, 14, 14),
+        num_init_features=24,
+        num_classes=num_classes,
+        **kwargs,
+    )
+
+
+def densenet_bc_76_12(num_classes: int = 10, **kwargs) -> MyQDenseNet:
+    """DenseNet-BC (L=76, k=12) для CIFAR-10"""
+    return MyQDenseNet(
+        growth_rate=12,
+        block_config=(12, 12, 12),
+        num_init_features=24,
+        num_classes=num_classes,
+        **kwargs,
+    )
+
+
+def densenet_bc_64_12(num_classes: int = 10, **kwargs) -> MyQDenseNet:
+    """DenseNet-BC (L=64, k=12) для CIFAR-10"""
+    return MyQDenseNet(
+        growth_rate=12,
+        block_config=(10, 10, 10),
+        num_init_features=24,
+        num_classes=num_classes,
+        **kwargs,
+    )
+
+
+def densenet_bc_52_12(num_classes: int = 10, **kwargs) -> MyQDenseNet:
+    """DenseNet-BC (L=52, k=12) для CIFAR-10"""
+    return MyQDenseNet(
+        growth_rate=12,
+        block_config=(8, 8, 8),
+        num_init_features=24,
+        num_classes=num_classes,
+        **kwargs,
+    )
+
+
 def densenet_bc_250_24(num_classes: int = 10, **kwargs) -> MyQDenseNet:
     """DenseNet-BC (L=250, k=24) для CIFAR-10"""
     return MyQDenseNet(
@@ -676,3 +925,14 @@ def densenet_bc_190_40(num_classes: int = 10, **kwargs) -> MyQDenseNet:
         num_classes=num_classes,
         **kwargs,
     )
+
+
+MODEL_REGISTRY = {
+    "densenet_bc_100_12": densenet_bc_100_12,
+    "densenet_bc_88_12": densenet_bc_88_12,
+    "densenet_bc_76_12": densenet_bc_76_12,
+    "densenet_bc_64_12": densenet_bc_64_12,
+    "densenet_bc_52_12": densenet_bc_52_12,
+    "densenet_bc_250_24": densenet_bc_250_24,
+    "densenet_bc_190_40": densenet_bc_190_40,
+}

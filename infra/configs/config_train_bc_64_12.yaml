@@ -1,0 +1,46 @@
+name: densenet-train-bc-64-12
+desc: Train DenseNet-BC (L=64, k=12) on CIFAR-10
+
+cmd: >
+  python3 experiment_densenet_cifar.py \
+    --mode train --model densenet_bc_64_12 --epochs 300 --device cuda --name cifar10_densenet_bc_64_12
+
+inputs:
+  - experiment_densenet_cifar.py
+  - densenet_quant.py
+  - dq_quantizer.py
+  - data_utils.py
+
+outputs:
+  - models/
+  - results/
+
+env:
+  python:
+    type: manual
+    version: 3.12.2
+    pip:
+      index-url: https://download.pytorch.org/whl/cu118
+      extra-index-urls:
+        - https://pypi.org/simple
+      trusted-hosts: # Список доверенных хостов
+        - pytorch.org
+        - pypi.org
+
+    requirements-file: infra/requirements.txt
+    root-path:
+      - experiment_densenet_cifar.py
+    local-paths:
+      - densenet_quant.py
+      - dq_quantizer.py
+      - data_utils.py
+
+flags:
+  - attach-project-disk
+
+cloud-instance-types:
+  - g2.1 # A100
+
+graceful-shutdown:
+  signal: SIGTERM
+  timeout: 15s

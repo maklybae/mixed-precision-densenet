@@ -21,7 +21,7 @@ import torch.optim as optim
 from tqdm import tqdm
 
 from data_utils import get_cifar10_loaders
-from densenet_quant import densenet_bc_190_40
+from densenet_quant import MODEL_REGISTRY
 
 MODELS_PATH = "./models"
 RESULTS_PATH = "./results"
@@ -225,6 +225,12 @@ def quantize_and_evaluate(
     default="full",
     help="Mode",
 )
+@click.option(
+    "--model",
+    type=click.Choice(list(MODEL_REGISTRY.keys())),
+    default="densenet_bc_100_12",
+    help="Model architecture to use",
+)
 @click.option("--epochs", type=int, default=300, help="No of training epochs")
 @click.option("--batch-size", type=int, default=128, help="Batch size")
 @click.option(
@@ -242,7 +248,7 @@ def quantize_and_evaluate(
 @click.option(
     "--name",
     type=str,
-    default="densenet_bc_190_40",
+    default="densenet_bc_100_12",
     help="Experiment name for saving",
 )
 @click.option(
@@ -254,20 +260,16 @@ def quantize_and_evaluate(
 @click.option(
     "--experiment-name",
     type=str,
-    default="densenet-cifar10-quantization",
+    default="densenet-cifar10",
     help="MLflow experiment name",
 )
 def main(
-    mode, epochs, batch_size, checkpoint, device, name, mlflow_uri, experiment_name
+    mode, model, epochs, batch_size, checkpoint, device, name, mlflow_uri, experiment_name
 ):
     mlflow.set_tracking_uri(mlflow_uri)
     mlflow.set_experiment(experiment_name)
     print(f"MLflow tracking URI: {mlflow_uri}")
     print(f"MLflow experiment: {experiment_name}")
-
-    if device == "cuda" and not torch.cuda.is_available():
-        print("CUDA not available, using CPU")
-        device = "cpu"
 
     device_str = device
     device = torch.device(device)
@@ -276,16 +278,17 @@ def main(
     print("Loading CIFAR-10 dataset...")
     train_loader, test_loader = get_cifar10_loaders(batch_size=batch_size)
 
-    model = densenet_bc_190_40(num_classes=10)
-    num_params = model.count_parameters()
-    print(f"Model parameters: {num_params:,}")
+    model_fn = MODEL_REGISTRY[model]
+    net = model_fn(num_classes=10)
+    num_params = net.count_parameters()
+    print(f"Model: {model}, parameters: {num_params:,}")
 
     checkpoint_path = f"{MODELS_PATH}/{name}.pt"
 
     with mlflow.start_run(run_name=name):
         mlflow.log_param("mode", mode)
         mlflow.log_param("model_name", name)
-        mlflow.log_param("model_architecture", "densenet_bc_190_40")
+        mlflow.log_param("model_architecture", model)
         mlflow.log_param("num_parameters", num_params)
         mlflow.log_param("batch_size", batch_size)
         mlflow.log_param("device", device_str)
@@ -307,8 +310,8 @@ def main(
             )
             mlflow.log_param("optimizer", "SGD_Nesterov")
 
-            model, history, best_acc = train_model(
-                model=model,
+            net, history, best_acc = train_model(
+                model=net,
                 train_loader=train_loader,
                 test_loader=test_loader,
                 device=device,
@@ -334,10 +337,10 @@ def main(
                     raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
 
                 print(f"\nLoading checkpoint: {checkpoint}")
-                model.load_state_dict(torch.load(checkpoint, map_location=device))
+                net.load_state_dict(torch.load(checkpoint, map_location=device))
             elif mode == "full":
                 if os.path.exists(checkpoint_path):
-                    model.load_state_dict(
+                    net.load_state_dict(
                         torch.load(checkpoint_path, map_location=device)
                     )
 
@@ -350,7 +353,7 @@ def main(
             mlflow.log_param("bits_list", "[16, 8, 6, 4, 3, 2]")
 
             quant_results = quantize_and_evaluate(
-                model=model,
+                model=net,
                 train_loader=train_loader,
                 test_loader=test_loader,
                 device=device,

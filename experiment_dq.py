@@ -12,7 +12,7 @@ import torch.optim as optim
 from tqdm import tqdm
 
 from data_utils import get_cifar10_loaders
-from densenet_quant import densenet_bc_190_40
+from densenet_quant import MODEL_REGISTRY
 from dq_quantizer import UniformQuantU3
 
 MODELS_PATH = "./models"
@@ -145,16 +145,19 @@ def evaluate(model, test_loader, criterion, device, use_tqdm=True):
 
 
 def log_bitwidths(model, step: int):
-    """Log per-layer bitwidths to MLflow."""
+    """Log per-layer bitwidths (discrete and soft) to MLflow."""
     bitwidths = model.get_bitwidths()
 
     all_bw = []
+    all_soft_bw = []
     for name, info in bitwidths.items():
         bw = info["bitwidth"]
+        soft_bw = info["soft_bitwidth"]
         all_bw.append(bw)
-        # Log a subset: too many metrics can be slow
+        all_soft_bw.append(soft_bw)
         short_name = name.replace(".", "_")
         mlflow.log_metric(f"bw/{short_name}", bw, step=step)
+        mlflow.log_metric(f"bw_soft/{short_name}", soft_bw, step=step)
 
     if all_bw:
         avg_bw = sum(all_bw) / len(all_bw)
@@ -163,6 +166,14 @@ def log_bitwidths(model, step: int):
         mlflow.log_metric("bw/avg", avg_bw, step=step)
         mlflow.log_metric("bw/min", min_bw, step=step)
         mlflow.log_metric("bw/max", max_bw, step=step)
+
+    if all_soft_bw:
+        avg_soft = sum(all_soft_bw) / len(all_soft_bw)
+        min_soft = min(all_soft_bw)
+        max_soft = max(all_soft_bw)
+        mlflow.log_metric("bw_soft/avg", avg_soft, step=step)
+        mlflow.log_metric("bw_soft/min", min_soft, step=step)
+        mlflow.log_metric("bw_soft/max", max_soft, step=step)
 
     return bitwidths
 
@@ -255,11 +266,12 @@ def train_dq(
         mlflow.log_metric("learning_rate", current_lr, step=epoch)
         mlflow.log_metric("quant_learning_rate", current_qlr, step=epoch)
 
+        with torch.no_grad():
+            avg_soft_bw = model.get_soft_bitwidths().mean().item()
+        mlflow.log_metric("bw/avg_soft", avg_soft_bw, step=epoch)
+
         if bitwidth_target is not None and bitwidth_lambda > 0:
-            with torch.no_grad():
-                avg_soft_bw = model.get_soft_bitwidths().mean().item()
             mlflow.log_metric("bw_penalty", train_penalty, step=epoch)
-            mlflow.log_metric("bw/avg_soft", avg_soft_bw, step=epoch)
 
         print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
         print(f"Test Loss:  {test_loss:.4f}, Test Acc:  {test_acc:.2f}%")
@@ -296,6 +308,12 @@ def train_dq(
     type=str,
     required=True,
     help="Path to pre-trained float checkpoint",
+)
+@click.option(
+    "--model",
+    type=click.Choice(list(MODEL_REGISTRY.keys())),
+    default="densenet_bc_100_12",
+    help="Model architecture to use",
 )
 @click.option("--epochs", type=int, default=160, help="Number of DQ training epochs")
 @click.option("--batch-size", type=int, default=128, help="Batch size")
@@ -336,7 +354,7 @@ def train_dq(
 @click.option(
     "--name",
     type=str,
-    default="densenet_bc_190_40_dq",
+    default="densenet_bc_100_12_dq",
     help="Experiment name for saving",
 )
 @click.option(
@@ -353,6 +371,7 @@ def train_dq(
 )
 def main(
     checkpoint,
+    model,
     epochs,
     batch_size,
     lr,
@@ -389,34 +408,35 @@ def main(
     print("Loading CIFAR-10 dataset...")
     train_loader, test_loader = get_cifar10_loaders(batch_size=batch_size)
 
-    model = densenet_bc_190_40(num_classes=10, memory_efficient=True)
-    num_params = model.count_parameters()
-    print(f"Model parameters: {num_params:,}")
+    model_fn = MODEL_REGISTRY[model]
+    net = model_fn(num_classes=10, memory_efficient=True)
+    num_params = net.count_parameters()
+    print(f"Model: {model}, parameters: {num_params:,}")
 
     if not os.path.exists(checkpoint):
         raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
 
     print(f"Loading pre-trained weights from: {checkpoint}")
-    model.load_state_dict(torch.load(checkpoint, map_location=device))
-    model = model.to(device)
+    net.load_state_dict(torch.load(checkpoint, map_location=device))
+    net = net.to(device)
 
     print("\nEvaluating float baseline...")
-    _, float_acc = evaluate(model, test_loader, None, device)
+    _, float_acc = evaluate(net, test_loader, None, device)
     print(f"Float32 Accuracy: {float_acc:.2f}%")
 
     print(f"\nCalibrating activation ranges ({calibration_batches} batches)...")
-    calibrate_model(model, train_loader, num_batches=calibration_batches, device=device)
+    calibrate_model(net, train_loader, num_batches=calibration_batches, device=device)
     print("Calibration complete.")
 
     print(f"\nEnabling DQ (U3 parametrization, init_bitwidth={init_bitwidth})...")
-    model.enable_dq(init_bitwidth=init_bitwidth)
-    model = model.to(device)
+    net.enable_dq(init_bitwidth=init_bitwidth)
+    net = net.to(device)
 
     init_bw_path = f"{RESULTS_PATH}/{name}_initial_bitwidths.json"
-    save_bitwidths_snapshot(model, init_bw_path)
+    save_bitwidths_snapshot(net, init_bw_path)
 
-    total_params_after = model.count_parameters()
-    quant_params = model.get_quantizer_params()
+    total_params_after = net.count_parameters()
+    quant_params = net.get_quantizer_params()
     print(f"Total parameters after DQ: {total_params_after:,} "
           f"(+{len(quant_params)} quantizer params)")
 
@@ -425,7 +445,7 @@ def main(
     with mlflow.start_run(run_name=name):
         mlflow.log_param("mode", "dq_training")
         mlflow.log_param("model_name", name)
-        mlflow.log_param("model_architecture", "densenet_bc_190_40")
+        mlflow.log_param("model_architecture", model)
         mlflow.log_param("num_parameters", num_params)
         mlflow.log_param("batch_size", batch_size)
         mlflow.log_param("device", device_str)
@@ -455,8 +475,8 @@ def main(
 
         mlflow.log_artifact(init_bw_path)
 
-        model, history, best_acc = train_dq(
-            model=model,
+        net, history, best_acc = train_dq(
+            model=net,
             train_loader=train_loader,
             test_loader=test_loader,
             device=device,
@@ -477,7 +497,7 @@ def main(
         mlflow.log_artifact(history_path)
 
         final_bw_path = f"{RESULTS_PATH}/{name}_final_bitwidths.json"
-        final_bw = save_bitwidths_snapshot(model, final_bw_path)
+        final_bw = save_bitwidths_snapshot(net, final_bw_path)
         mlflow.log_artifact(final_bw_path)
 
         print("\n" + "=" * 60)

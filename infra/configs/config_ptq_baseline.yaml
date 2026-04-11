@@ -1,0 +1,51 @@
+name: densenet-ptq-baseline
+desc: PTQ Baseline experiments for all DenseNet-BC models on CIFAR-10
+
+cmd: >
+  python3 experiment_ptq_baseline.py \
+    --model all --device cuda \
+    --calibration-method percentile --percentile 0.9999 \
+    --calibration-batches 50 --corrected-inputs --skip-first-last \
+    --experiment-type both \
+    --finetune --finetune-epochs 5 --finetune-lr 1e-4
+
+inputs:
+  - experiment_ptq_baseline.py
+  - ptq_utils.py
+  - densenet_quant.py
+  - dq_quantizer.py
+  - data_utils.py
+
+outputs:
+  - results/
+
+env:
+  python:
+    type: manual
+    version: 3.12.2
+    pip:
+      index-url: https://download.pytorch.org/whl/cu118
+      extra-index-urls:
+        - https://pypi.org/simple
+      trusted-hosts:
+        - pytorch.org
+        - pypi.org
+
+    requirements-file: infra/requirements.txt
+    root-path:
+      - experiment_ptq_baseline.py
+    local-paths:
+      - ptq_utils.py
+      - densenet_quant.py
+      - dq_quantizer.py
+      - data_utils.py
+
+flags:
+  - attach-project-disk
+
+cloud-instance-types:
+  - g2.1 # A100
+
+graceful-shutdown:
+  signal: SIGTERM
+  timeout: 15s

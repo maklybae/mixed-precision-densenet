@@ -180,3 +180,4 @@ pyrightconfig.json
 *.pt
 *.pth
 data/
+.DS_Store
