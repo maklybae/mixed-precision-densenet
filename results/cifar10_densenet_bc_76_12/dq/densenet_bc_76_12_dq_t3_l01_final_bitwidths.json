@@ -1,0 +1,1059 @@
+{
+  "blocks.0.layers.0.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.1602840423583984,
+    "d": 0.04401269927620888,
+    "q_max": 0.15272533893585205,
+    "signed": true
+  },
+  "blocks.0.layers.0.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.7334706783294678,
+    "d": 0.03366061672568321,
+    "q_max": 0.07826995849609375,
+    "signed": true
+  },
+  "blocks.0.layers.0.dq_input_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.080842018127441,
+    "d": 0.04418117180466652,
+    "q_max": 1.4511007070541382,
+    "signed": false
+  },
+  "blocks.0.layers.0.dq_mid_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.376636028289795,
+    "d": 0.08835684508085251,
+    "q_max": 3.582512855529785,
+    "signed": false
+  },
+  "blocks.0.layers.1.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 2.7932705879211426,
+    "d": 0.04415220394730568,
+    "q_max": 0.10887923091650009,
+    "signed": true
+  },
+  "blocks.0.layers.1.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.288639545440674,
+    "d": 0.03253358602523804,
+    "q_max": 0.04694517329335213,
+    "signed": true
+  },
+  "blocks.0.layers.1.dq_input_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.440169334411621,
+    "d": 0.08436118811368942,
+    "q_max": 3.578301191329956,
+    "signed": false
+  },
+  "blocks.0.layers.1.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.200182914733887,
+    "d": 0.08838414400815964,
+    "q_max": 1.5362492799758911,
+    "signed": false
+  },
+  "blocks.0.layers.2.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 2.8012802600860596,
+    "d": 0.04399987310171127,
+    "q_max": 0.10935261845588684,
+    "signed": true
+  },
+  "blocks.0.layers.2.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.22763729095459,
+    "d": 0.03490747883915901,
+    "q_max": 0.04683995246887207,
+    "signed": true
+  },
+  "blocks.0.layers.2.dq_input_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 6.341686248779297,
+    "d": 0.0447002612054348,
+    "q_max": 3.580632448196411,
+    "signed": false
+  },
+  "blocks.0.layers.2.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.1887946128845215,
+    "d": 0.08830130100250244,
+    "q_max": 1.5220474004745483,
+    "signed": false
+  },
+  "blocks.0.layers.3.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.6429591178894043,
+    "d": 0.04426157847046852,
+    "q_max": 0.09396987408399582,
+    "signed": true
+  },
+  "blocks.0.layers.3.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.196772575378418,
+    "d": 0.04415546730160713,
+    "q_max": 0.057060472667217255,
+    "signed": true
+  },
+  "blocks.0.layers.3.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.183067321777344,
+    "d": 0.08830530196428299,
+    "q_max": 1.5157356262207031,
+    "signed": false
+  },
+  "blocks.0.layers.3.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.8734261989593506,
+    "d": 0.1121000424027443,
+    "q_max": 1.5308456420898438,
+    "signed": false
+  },
+  "blocks.0.layers.4.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 2.7732529640197754,
+    "d": 0.04397457465529442,
+    "q_max": 0.10634101927280426,
+    "signed": true
+  },
+  "blocks.0.layers.4.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.2373862266540527,
+    "d": 0.03454623371362686,
+    "q_max": 0.04690376669168472,
+    "signed": true
+  },
+  "blocks.0.layers.4.dq_input_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.377369403839111,
+    "d": 0.0883176177740097,
+    "q_max": 3.5827877521514893,
+    "signed": false
+  },
+  "blocks.0.layers.4.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.68477463722229,
+    "d": 0.1272687464952469,
+    "q_max": 1.5093573331832886,
+    "signed": false
+  },
+  "blocks.0.layers.5.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.1402266025543213,
+    "d": 0.04412684962153435,
+    "q_max": 0.1503981202840805,
+    "signed": true
+  },
+  "blocks.0.layers.5.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.515047550201416,
+    "d": 0.04170618951320648,
+    "q_max": 0.07749352604150772,
+    "signed": true
+  },
+  "blocks.0.layers.5.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.374043941497803,
+    "d": 0.08848351240158081,
+    "q_max": 3.5810494422912598,
+    "signed": false
+  },
+  "blocks.0.layers.5.dq_mid_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.376839637756348,
+    "d": 0.08836346864700317,
+    "q_max": 3.583298683166504,
+    "signed": false
+  },
+  "blocks.0.layers.6.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 2.779914140701294,
+    "d": 0.04394063726067543,
+    "q_max": 0.10695403069257736,
+    "signed": true
+  },
+  "blocks.0.layers.6.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.3107504844665527,
+    "d": 0.031673409044742584,
+    "q_max": 0.04689899832010269,
+    "signed": true
+  },
+  "blocks.0.layers.6.dq_input_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.376745223999023,
+    "d": 0.08836705982685089,
+    "q_max": 3.5832042694091797,
+    "signed": false
+  },
+  "blocks.0.layers.6.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.41216516494751,
+    "d": 0.17673355340957642,
+    "q_max": 3.5860838890075684,
+    "signed": false
+  },
+  "blocks.0.layers.7.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.370692014694214,
+    "d": 0.04404255747795105,
+    "q_max": 0.06984911113977432,
+    "signed": true
+  },
+  "blocks.0.layers.7.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.2914862632751465,
+    "d": 0.03234217315912247,
+    "q_max": 0.04682502895593643,
+    "signed": true
+  },
+  "blocks.0.layers.7.dq_input_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.18027400970459,
+    "d": 0.08843238651752472,
+    "q_max": 1.5148102045059204,
+    "signed": false
+  },
+  "blocks.0.layers.7.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.3868248462677,
+    "d": 0.16247117519378662,
+    "q_max": 1.5369936227798462,
+    "signed": false
+  },
+  "blocks.0.layers.8.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.474308967590332,
+    "d": 0.03732522204518318,
+    "q_max": 0.06638310849666595,
+    "signed": true
+  },
+  "blocks.0.layers.8.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.3703486919403076,
+    "d": 0.029568124562501907,
+    "q_max": 0.046875253319740295,
+    "signed": true
+  },
+  "blocks.0.layers.8.dq_input_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.376732349395752,
+    "d": 0.08838307112455368,
+    "q_max": 3.5838210582733154,
+    "signed": false
+  },
+  "blocks.0.layers.8.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.624180555343628,
+    "d": 0.13585712015628815,
+    "q_max": 1.5393537282943726,
+    "signed": false
+  },
+  "blocks.0.layers.9.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.4571313858032227,
+    "d": 0.04421798512339592,
+    "q_max": 0.07718773931264877,
+    "signed": true
+  },
+  "blocks.0.layers.9.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.616044044494629,
+    "d": 0.022681839764118195,
+    "q_max": 0.04684557393193245,
+    "signed": true
+  },
+  "blocks.0.layers.9.dq_input_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.1823811531066895,
+    "d": 0.08842366188764572,
+    "q_max": 1.5170035362243652,
+    "signed": false
+  },
+  "blocks.0.layers.9.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.4118778705596924,
+    "d": 0.1597725749015808,
+    "q_max": 1.540739893913269,
+    "signed": false
+  },
+  "blocks.0.layers.10.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.337205648422241,
+    "d": 0.04108467325568199,
+    "q_max": 0.06272047013044357,
+    "signed": true
+  },
+  "blocks.0.layers.10.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.6429224014282227,
+    "d": 0.022007858380675316,
+    "q_max": 0.04672219231724739,
+    "signed": true
+  },
+  "blocks.0.layers.10.dq_input_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.18916654586792,
+    "d": 0.08841563761234283,
+    "q_max": 1.5244340896606445,
+    "signed": false
+  },
+  "blocks.0.layers.10.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.276312828063965,
+    "d": 0.17673982679843903,
+    "q_max": 1.5356507301330566,
+    "signed": false
+  },
+  "blocks.0.layers.11.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.5841455459594727,
+    "d": 0.03899451717734337,
+    "q_max": 0.07792281359434128,
+    "signed": true
+  },
+  "blocks.0.layers.11.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.6346006393432617,
+    "d": 0.022266652435064316,
+    "q_max": 0.04687165468931198,
+    "signed": true
+  },
+  "blocks.0.layers.11.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.376173496246338,
+    "d": 0.08839196711778641,
+    "q_max": 3.582759380340576,
+    "signed": false
+  },
+  "blocks.0.layers.11.dq_mid_act": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.280237913131714,
+    "d": 0.17680078744888306,
+    "q_max": 1.5408474206924438,
+    "signed": false
+  },
+  "blocks.1.layers.0.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.6361658573150635,
+    "d": 0.022164301946759224,
+    "q_max": 0.04673090949654579,
+    "signed": true
+  },
+  "blocks.1.layers.0.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.6298105716705322,
+    "d": 0.022418219596147537,
+    "q_max": 0.046959977596998215,
+    "signed": true
+  },
+  "blocks.1.layers.0.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.194559097290039,
+    "d": 0.0883864313364029,
+    "q_max": 1.5299683809280396,
+    "signed": false
+  },
+  "blocks.1.layers.0.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.2798099517822266,
+    "d": 0.17674586176872253,
+    "q_max": 1.539859414100647,
+    "signed": false
+  },
+  "blocks.1.layers.1.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.349862813949585,
+    "d": 0.030249668285250664,
+    "q_max": 0.04685307294130325,
+    "signed": true
+  },
+  "blocks.1.layers.1.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.419900894165039,
+    "d": 0.04418240860104561,
+    "q_max": 0.07403519004583359,
+    "signed": true
+  },
+  "blocks.1.layers.1.dq_input_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.163308620452881,
+    "d": 0.09011781215667725,
+    "q_max": 1.5245808362960815,
+    "signed": false
+  },
+  "blocks.1.layers.1.dq_mid_act": {
+    "bitwidth": 2,
+    "soft_bitwidth": 2.1680994033813477,
+    "d": 0.09828849136829376,
+    "q_max": 0.3434503674507141,
+    "signed": false
+  },
+  "blocks.1.layers.2.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.597817897796631,
+    "d": 0.03856749087572098,
+    "q_max": 0.07817056030035019,
+    "signed": true
+  },
+  "blocks.1.layers.2.dq_w2": {
+    "bitwidth": 2,
+    "soft_bitwidth": 2.064052104949951,
+    "d": 0.044204242527484894,
+    "q_max": 0.04821779951453209,
+    "signed": true
+  },
+  "blocks.1.layers.2.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.189455032348633,
+    "d": 0.08836943656206131,
+    "q_max": 1.5239596366882324,
+    "signed": false
+  },
+  "blocks.1.layers.2.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.2758331298828125,
+    "d": 0.1767650544643402,
+    "q_max": 1.5353007316589355,
+    "signed": false
+  },
+  "blocks.1.layers.3.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.062084674835205,
+    "d": 0.04357552155852318,
+    "q_max": 0.0474078431725502,
+    "signed": true
+  },
+  "blocks.1.layers.3.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.3774733543395996,
+    "d": 0.04403167590498924,
+    "q_max": 0.07036832720041275,
+    "signed": true
+  },
+  "blocks.1.layers.3.dq_input_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.1897053718566895,
+    "d": 0.08839219063520432,
+    "q_max": 1.5246318578720093,
+    "signed": false
+  },
+  "blocks.1.layers.3.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.713188886642456,
+    "d": 0.12701420485973358,
+    "q_max": 1.538826584815979,
+    "signed": false
+  },
+  "blocks.1.layers.4.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.1751601696014404,
+    "d": 0.022160429507493973,
+    "q_max": 0.07792402803897858,
+    "signed": true
+  },
+  "blocks.1.layers.4.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.0109145641326904,
+    "d": 0.025736607611179352,
+    "q_max": 0.07799161225557327,
+    "signed": true
+  },
+  "blocks.1.layers.4.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.190019607543945,
+    "d": 0.08834335952997208,
+    "q_max": 1.5241409540176392,
+    "signed": false
+  },
+  "blocks.1.layers.4.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.946913003921509,
+    "d": 0.10676585137844086,
+    "q_max": 1.5397714376449585,
+    "signed": false
+  },
+  "blocks.1.layers.5.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.158247470855713,
+    "d": 0.022385451942682266,
+    "q_max": 0.07753700762987137,
+    "signed": true
+  },
+  "blocks.1.layers.5.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.1413509845733643,
+    "d": 0.022798793390393257,
+    "q_max": 0.07778378576040268,
+    "signed": true
+  },
+  "blocks.1.layers.5.dq_input_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 2.6543729305267334,
+    "d": 0.08833370357751846,
+    "q_max": 0.4677911400794983,
+    "signed": false
+  },
+  "blocks.1.layers.5.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.7503867149353027,
+    "d": 0.12361153215169907,
+    "q_max": 1.5399463176727295,
+    "signed": false
+  },
+  "blocks.1.layers.6.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.1260077953338623,
+    "d": 0.022508932277560234,
+    "q_max": 0.07574434578418732,
+    "signed": true
+  },
+  "blocks.1.layers.6.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.740571975708008,
+    "d": 0.03346804156899452,
+    "q_max": 0.0783713087439537,
+    "signed": true
+  },
+  "blocks.1.layers.6.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.189237117767334,
+    "d": 0.08838601410388947,
+    "q_max": 1.524001955986023,
+    "signed": false
+  },
+  "blocks.1.layers.6.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.279629707336426,
+    "d": 0.17673327028751373,
+    "q_max": 1.5395351648330688,
+    "signed": false
+  },
+  "blocks.1.layers.7.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.140166759490967,
+    "d": 0.022469235584139824,
+    "q_max": 0.07657807320356369,
+    "signed": true
+  },
+  "blocks.1.layers.7.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.3622512817382812,
+    "d": 0.043700750917196274,
+    "q_max": 0.06864778697490692,
+    "signed": true
+  },
+  "blocks.1.layers.7.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.188813209533691,
+    "d": 0.0883612409234047,
+    "q_max": 1.5231014490127563,
+    "signed": false
+  },
+  "blocks.1.layers.7.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.799403190612793,
+    "d": 0.11900347471237183,
+    "q_max": 1.5378875732421875,
+    "signed": false
+  },
+  "blocks.1.layers.8.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.162524938583374,
+    "d": 0.022533588111400604,
+    "q_max": 0.07834877818822861,
+    "signed": true
+  },
+  "blocks.1.layers.8.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.110954523086548,
+    "d": 0.023593856021761894,
+    "q_max": 0.07832616567611694,
+    "signed": true
+  },
+  "blocks.1.layers.8.dq_input_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 2.653895139694214,
+    "d": 0.08793351799249649,
+    "q_max": 0.4654885530471802,
+    "signed": false
+  },
+  "blocks.1.layers.8.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.148874759674072,
+    "d": 0.0919157862663269,
+    "q_max": 1.53860342502594,
+    "signed": false
+  },
+  "blocks.1.layers.9.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.1818928718566895,
+    "d": 0.022080600261688232,
+    "q_max": 0.07810978591442108,
+    "signed": true
+  },
+  "blocks.1.layers.9.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.083855152130127,
+    "d": 0.02415139228105545,
+    "q_max": 0.07823566347360611,
+    "signed": true
+  },
+  "blocks.1.layers.9.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.189960479736328,
+    "d": 0.08830925077199936,
+    "q_max": 1.5234867334365845,
+    "signed": false
+  },
+  "blocks.1.layers.9.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.5812621116638184,
+    "d": 0.14111456274986267,
+    "q_max": 1.5479223728179932,
+    "signed": false
+  },
+  "blocks.1.layers.10.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.280010938644409,
+    "d": 0.02217816561460495,
+    "q_max": 0.08553710579872131,
+    "signed": true
+  },
+  "blocks.1.layers.10.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.157947063446045,
+    "d": 0.022572340443730354,
+    "q_max": 0.07816336303949356,
+    "signed": true
+  },
+  "blocks.1.layers.10.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.189558506011963,
+    "d": 0.08837684243917465,
+    "q_max": 1.5242031812667847,
+    "signed": false
+  },
+  "blocks.1.layers.10.dq_mid_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.377385139465332,
+    "d": 0.08836261928081512,
+    "q_max": 3.584653615951538,
+    "signed": false
+  },
+  "blocks.1.layers.11.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.2386176586151123,
+    "d": 0.022115178406238556,
+    "q_max": 0.08225622773170471,
+    "signed": true
+  },
+  "blocks.1.layers.11.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.1767475605010986,
+    "d": 0.022197728976607323,
+    "q_max": 0.07816554605960846,
+    "signed": true
+  },
+  "blocks.1.layers.11.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.190150260925293,
+    "d": 0.0882754996418953,
+    "q_max": 1.5231159925460815,
+    "signed": false
+  },
+  "blocks.1.layers.11.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.375028610229492,
+    "d": 0.08849599957466125,
+    "q_max": 3.5840604305267334,
+    "signed": false
+  },
+  "blocks.2.layers.0.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 2.9952616691589355,
+    "d": 0.024290986359119415,
+    "q_max": 0.07255435734987259,
+    "signed": true
+  },
+  "blocks.2.layers.0.dq_w2": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.177760362625122,
+    "d": 0.02209494821727276,
+    "q_max": 0.07787378877401352,
+    "signed": true
+  },
+  "blocks.2.layers.0.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.191168308258057,
+    "d": 0.08838695287704468,
+    "q_max": 1.5261781215667725,
+    "signed": false
+  },
+  "blocks.2.layers.0.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.192528247833252,
+    "d": 0.08851010352373123,
+    "q_max": 1.5298291444778442,
+    "signed": false
+  },
+  "blocks.2.layers.1.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.117527961730957,
+    "d": 0.022267719730734825,
+    "q_max": 0.07436300069093704,
+    "signed": true
+  },
+  "blocks.2.layers.1.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.178328514099121,
+    "d": 0.02216227725148201,
+    "q_max": 0.07815057039260864,
+    "signed": true
+  },
+  "blocks.2.layers.1.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.189937591552734,
+    "d": 0.0883798822760582,
+    "q_max": 1.524679183959961,
+    "signed": false
+  },
+  "blocks.2.layers.1.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.194550037384033,
+    "d": 0.08841623365879059,
+    "q_max": 1.530474066734314,
+    "signed": false
+  },
+  "blocks.2.layers.2.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.1748201847076416,
+    "d": 0.022030659019947052,
+    "q_max": 0.07744426280260086,
+    "signed": true
+  },
+  "blocks.2.layers.2.dq_w2": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.1813459396362305,
+    "d": 0.022090571001172066,
+    "q_max": 0.0781070739030838,
+    "signed": true
+  },
+  "blocks.2.layers.2.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.188627243041992,
+    "d": 0.08831439167261124,
+    "q_max": 1.5220859050750732,
+    "signed": false
+  },
+  "blocks.2.layers.2.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.191166400909424,
+    "d": 0.0884154736995697,
+    "q_max": 1.5266684293746948,
+    "signed": false
+  },
+  "blocks.2.layers.3.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.179105758666992,
+    "d": 0.022095033898949623,
+    "q_max": 0.07796735316514969,
+    "signed": true
+  },
+  "blocks.2.layers.3.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.1783015727996826,
+    "d": 0.022166289389133453,
+    "q_max": 0.07816285640001297,
+    "signed": true
+  },
+  "blocks.2.layers.3.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.189621925354004,
+    "d": 0.0882950872182846,
+    "q_max": 1.5228641033172607,
+    "signed": false
+  },
+  "blocks.2.layers.3.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.195928573608398,
+    "d": 0.08844837546348572,
+    "q_max": 1.532578468322754,
+    "signed": false
+  },
+  "blocks.2.layers.4.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.180964231491089,
+    "d": 0.02217077650129795,
+    "q_max": 0.0783640593290329,
+    "signed": true
+  },
+  "blocks.2.layers.4.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.178938627243042,
+    "d": 0.02210741676390171,
+    "q_max": 0.07799945771694183,
+    "signed": true
+  },
+  "blocks.2.layers.4.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.188170909881592,
+    "d": 0.08835060894489288,
+    "q_max": 1.5222010612487793,
+    "signed": false
+  },
+  "blocks.2.layers.4.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.374129772186279,
+    "d": 0.08854655921459198,
+    "q_max": 3.5838193893432617,
+    "signed": false
+  },
+  "blocks.2.layers.5.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.1854708194732666,
+    "d": 0.022114243358373642,
+    "q_max": 0.07847796380519867,
+    "signed": true
+  },
+  "blocks.2.layers.5.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.1779983043670654,
+    "d": 0.022104263305664062,
+    "q_max": 0.07792310416698456,
+    "signed": true
+  },
+  "blocks.2.layers.5.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.812433242797852,
+    "d": 0.05613308399915695,
+    "q_max": 1.5211353302001953,
+    "signed": false
+  },
+  "blocks.2.layers.5.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.375106334686279,
+    "d": 0.08845894783735275,
+    "q_max": 3.5827581882476807,
+    "signed": false
+  },
+  "blocks.2.layers.6.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.1846110820770264,
+    "d": 0.022055529057979584,
+    "q_max": 0.07820983231067657,
+    "signed": true
+  },
+  "blocks.2.layers.6.dq_w2": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.1821813583374023,
+    "d": 0.022092854604125023,
+    "q_max": 0.07817317545413971,
+    "signed": true
+  },
+  "blocks.2.layers.6.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.323537826538086,
+    "d": 0.07983720302581787,
+    "q_max": 1.518689751625061,
+    "signed": false
+  },
+  "blocks.2.layers.6.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.376210689544678,
+    "d": 0.08842005580663681,
+    "q_max": 3.5839927196502686,
+    "signed": false
+  },
+  "blocks.2.layers.7.dq_w1": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.278388738632202,
+    "d": 0.022137098014354706,
+    "q_max": 0.08525789529085159,
+    "signed": true
+  },
+  "blocks.2.layers.7.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.132927894592285,
+    "d": 0.022319113835692406,
+    "q_max": 0.07557401061058044,
+    "signed": true
+  },
+  "blocks.2.layers.7.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.789345741271973,
+    "d": 0.056842777878046036,
+    "q_max": 1.5150104761123657,
+    "signed": false
+  },
+  "blocks.2.layers.7.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.376031875610352,
+    "d": 0.08841045945882797,
+    "q_max": 3.5831480026245117,
+    "signed": false
+  },
+  "blocks.2.layers.8.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.3001041412353516,
+    "d": 0.021921060979366302,
+    "q_max": 0.08603870868682861,
+    "signed": true
+  },
+  "blocks.2.layers.8.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.05352783203125,
+    "d": 0.022194787859916687,
+    "q_max": 0.06994017213582993,
+    "signed": true
+  },
+  "blocks.2.layers.8.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.9165754318237305,
+    "d": 0.051932334899902344,
+    "q_max": 1.5165315866470337,
+    "signed": false
+  },
+  "blocks.2.layers.8.dq_mid_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.376599311828613,
+    "d": 0.08839848637580872,
+    "q_max": 3.584106922149658,
+    "signed": false
+  },
+  "blocks.2.layers.9.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.2870731353759766,
+    "d": 0.022087328135967255,
+    "q_max": 0.08571317791938782,
+    "signed": true
+  },
+  "blocks.2.layers.9.dq_w2": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.0909860134124756,
+    "d": 0.022049330174922943,
+    "q_max": 0.07188943773508072,
+    "signed": true
+  },
+  "blocks.2.layers.9.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.115403175354004,
+    "d": 0.04492531716823578,
+    "q_max": 1.512405514717102,
+    "signed": false
+  },
+  "blocks.2.layers.9.dq_mid_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.37741756439209,
+    "d": 0.08835414797067642,
+    "q_max": 3.5843923091888428,
+    "signed": false
+  },
+  "blocks.2.layers.10.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.3172004222869873,
+    "d": 0.021596360951662064,
+    "q_max": 0.08603216707706451,
+    "signed": true
+  },
+  "blocks.2.layers.10.dq_w2": {
+    "bitwidth": 3,
+    "soft_bitwidth": 3.067542791366577,
+    "d": 0.02213393710553646,
+    "q_max": 0.07064534723758698,
+    "signed": true
+  },
+  "blocks.2.layers.10.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.082704067230225,
+    "d": 0.04543754458427429,
+    "q_max": 1.4943516254425049,
+    "signed": false
+  },
+  "blocks.2.layers.10.dq_mid_act": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.377074241638184,
+    "d": 0.08836762607097626,
+    "q_max": 3.584064245223999,
+    "signed": false
+  },
+  "blocks.2.layers.11.dq_w1": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.256046772003174,
+    "d": 0.022058717906475067,
+    "q_max": 0.0833115428686142,
+    "signed": true
+  },
+  "blocks.2.layers.11.dq_w2": {
+    "bitwidth": 4,
+    "soft_bitwidth": 3.1812877655029297,
+    "d": 0.022096674889326096,
+    "q_max": 0.07812462002038956,
+    "signed": true
+  },
+  "blocks.2.layers.11.dq_input_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.828918933868408,
+    "d": 0.05536193773150444,
+    "q_max": 1.5181162357330322,
+    "signed": false
+  },
+  "blocks.2.layers.11.dq_mid_act": {
+    "bitwidth": 4,
+    "soft_bitwidth": 4.150897979736328,
+    "d": 0.08838889002799988,
+    "q_max": 1.4817659854888916,
+    "signed": false
+  },
+  "transitions.0.dq_w": {
+    "bitwidth": 6,
+    "soft_bitwidth": 5.292699337005615,
+    "d": 0.01371155958622694,
+    "q_max": 0.2550196647644043,
+    "signed": true
+  },
+  "transitions.0.dq_input_act": {
+    "bitwidth": 7,
+    "soft_bitwidth": 6.360930442810059,
+    "d": 0.044105950742959976,
+    "q_max": 3.581061363220215,
+    "signed": false
+  },
+  "transitions.1.dq_w": {
+    "bitwidth": 5,
+    "soft_bitwidth": 5.077608108520508,
+    "d": 0.011077811010181904,
+    "q_max": 0.1759629249572754,
+    "signed": true
+  },
+  "transitions.1.dq_input_act": {
+    "bitwidth": 8,
+    "soft_bitwidth": 7.405204772949219,
+    "d": 0.04403437674045563,
+    "q_max": 7.4201202392578125,
+    "signed": false
+  },
+  "dq_first_w": {
+    "bitwidth": 7,
+    "soft_bitwidth": 6.214357852935791,
+    "d": 0.022060981020331383,
+    "q_max": 0.796974778175354,
+    "signed": true
+  },
+  "dq_classifier_w": {
+    "bitwidth": 5,
+    "soft_bitwidth": 3.937497854232788,
+    "d": 0.17672760784626007,
+    "q_max": 1.1771498918533325,
+    "signed": true
+  },
+  "dq_final_act": {
+    "bitwidth": 5,
+    "soft_bitwidth": 4.26209831237793,
+    "d": 0.5484052896499634,
+    "q_max": 9.97414779663086,
+    "signed": false
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "model": "densenet_bc_64_12",
+  "float32_accuracy": 94.23,
+  "calibration": {
+    "method": "percentile",
+    "percentile": 0.9999,
+    "batches": 50,
+    "corrected_inputs": true,
+    "skip_first_last": true
+  },
+  "uniform": [
+    {
+      "bits": 3,
+      "w_bins": 7,
+      "a_bins": 8,
+      "accuracy": 10.77,
+      "drop": 83.46,
+      "accuracy_ft": 79.67,
+      "drop_ft": 14.56
+    },
+    {
+      "bits": 3.5,
+      "w_bins": 9,
+      "a_bins": 11,
+      "accuracy": 46.3,
+      "drop": 47.93,
+      "accuracy_ft": 87.78,
+      "drop_ft": 6.45
+    },
+    {
+      "bits": 4,
+      "w_bins": 15,
+      "a_bins": 16,
+      "accuracy": 85.05,
+      "drop": 9.18,
+      "accuracy_ft": 92.03,
+      "drop_ft": 2.2
+    },
+    {
+      "bits": 4.5,
+      "w_bins": 21,
+      "a_bins": 23,
+      "accuracy": 91.44,
+      "drop": 2.79,
+      "accuracy_ft": 93.4,
+      "drop_ft": 0.83
+    },
+    {
+      "bits": 5,
+      "w_bins": 31,
+      "a_bins": 32,
+      "accuracy": 92.73,
+      "drop": 1.5,
+      "accuracy_ft": 93.9,
+      "drop_ft": 0.33
+    },
+    {
+      "bits": 5.5,
+      "w_bins": 43,
+      "a_bins": 45,
+      "accuracy": 93.11,
+      "drop": 1.12,
+      "accuracy_ft": 94.26,
+      "drop_ft": -0.03
+    },
+    {
+      "bits": 6,
+      "w_bins": 63,
+      "a_bins": 64,
+      "accuracy": 94.05,
+      "drop": 0.18,
+      "accuracy_ft": 94.38,
+      "drop_ft": -0.15
+    },
+    {
+      "bits": 8,
+      "w_bins": 255,
+      "a_bins": 256,
+      "accuracy": 94.14,
+      "drop": 0.09,
+      "accuracy_ft": 94.55,
+      "drop_ft": -0.32
+    }
+  ],
+  "split": [
+    {
+      "w_bits": 3,
+      "a_bits": 4,
+      "w_bins": 7,
+      "a_bins": 16,
+      "accuracy": 36.53,
+      "drop": 57.7,
+      "accuracy_ft": 89.17,
+      "drop_ft": 5.06
+    },
+    {
+      "w_bits": 3,
+      "a_bits": 5,
+      "w_bins": 7,
+      "a_bins": 32,
+      "accuracy": 42.39,
+      "drop": 51.84,
+      "accuracy_ft": 91.12,
+      "drop_ft": 3.11
+    },
+    {
+      "w_bits": 3,
+      "a_bits": 6,
+      "w_bins": 7,
+      "a_bins": 64,
+      "accuracy": 43.19,
+      "drop": 51.04,
+      "accuracy_ft": 91.42,
+      "drop_ft": 2.81
+    },
+    {
+      "w_bits": 3.5,
+      "a_bits": 4.5,
+      "w_bins": 9,
+      "a_bins": 23,
+      "accuracy": 81.99,
+      "drop": 12.24,
+      "accuracy_ft": 92.08,
+      "drop_ft": 2.15
+    },
+    {
+      "w_bits": 3.5,
+      "a_bits": 5.5,
+      "w_bins": 9,
+      "a_bins": 45,
+      "accuracy": 83.91,
+      "drop": 10.32,
+      "accuracy_ft": 92.99,
+      "drop_ft": 1.24
+    },
+    {
+      "w_bits": 3.5,
+      "a_bits": 6.5,
+      "w_bins": 9,
+      "a_bins": 91,
+      "accuracy": 84.53,
+      "drop": 9.7,
+      "accuracy_ft": 92.97,
+      "drop_ft": 1.26
+    },
+    {
+      "w_bits": 4,
+      "a_bits": 5,
+      "w_bins": 15,
+      "a_bins": 32,
+      "accuracy": 89.82,
+      "drop": 4.41,
+      "accuracy_ft": 93.34,
+      "drop_ft": 0.89
+    },
+    {
+      "w_bits": 4,
+      "a_bits": 6,
+      "w_bins": 15,
+      "a_bins": 64,
+      "accuracy": 90.57,
+      "drop": 3.66,
+      "accuracy_ft": 93.6,
+      "drop_ft": 0.63
+    },
+    {
+      "w_bits": 4,
+      "a_bits": 7,
+      "w_bins": 15,
+      "a_bins": 128,
+      "accuracy": 90.6,
+      "drop": 3.63,
+      "accuracy_ft": 93.6,
+      "drop_ft": 0.63
+    },
+    {
+      "w_bits": 4.5,
+      "a_bits": 5.5,
+      "w_bins": 21,
+      "a_bins": 45,
+      "accuracy": 92.51,
+      "drop": 1.72,
+      "accuracy_ft": 93.88,
+      "drop_ft": 0.35
+    },
+    {
+      "w_bits": 4.5,
+      "a_bits": 6.5,
+      "w_bins": 21,
+      "a_bins": 91,
+      "accuracy": 92.86,
+      "drop": 1.37,
+      "accuracy_ft": 94.16,
+      "drop_ft": 0.07
+    },
+    {
+      "w_bits": 4.5,
+      "a_bits": 7.5,
+      "w_bins": 21,
+      "a_bins": 181,
+      "accuracy": 92.58,
+      "drop": 1.65,
+      "accuracy_ft": 94.1,
+      "drop_ft": 0.13
+    },
+    {
+      "w_bits": 5,
+      "a_bits": 6,
+      "w_bins": 31,
+      "a_bins": 64,
+      "accuracy": 93.13,
+      "drop": 1.1,
+      "accuracy_ft": 94.1,
+      "drop_ft": 0.13
+    },
+    {
+      "w_bits": 5,
+      "a_bits": 7,
+      "w_bins": 31,
+      "a_bins": 128,
+      "accuracy": 93.22,
+      "drop": 1.01,
+      "accuracy_ft": 94.15,
+      "drop_ft": 0.08
+    },
+    {
+      "w_bits": 5,
+      "a_bits": 8,
+      "w_bins": 31,
+      "a_bins": 256,
+      "accuracy": 93.31,
+      "drop": 0.92,
+      "accuracy_ft": 94.17,
+      "drop_ft": 0.06
+    }
+  ]
+}
