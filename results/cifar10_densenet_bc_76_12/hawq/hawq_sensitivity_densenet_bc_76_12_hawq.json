@@ -1,0 +1,417 @@
+{
+  "metadata": {
+    "model": "densenet_bc_76_12",
+    "checkpoint": "models/cifar10_densenet_bc_76_12.pt",
+    "num_blocks": 40,
+    "total_params": 471886,
+    "num_iters": 100,
+    "num_batches": 2,
+    "batch_size": 128,
+    "tolerance": 0.001,
+    "seed": 42,
+    "device": "cuda",
+    "elapsed_seconds": 1336.7
+  },
+  "blocks": [
+    {
+      "block_id": 0,
+      "name": "conv0",
+      "num_params": 648,
+      "eigenvalue": 0.08241569995880127,
+      "abs_eigenvalue": 0.08241569995880127,
+      "sensitivity": 0.00012718472215864394,
+      "converged_iters": 100,
+      "rank": 1
+    },
+    {
+      "block_id": 38,
+      "name": "block2.layer11",
+      "num_params": 16992,
+      "eigenvalue": 0.6474877223372459,
+      "abs_eigenvalue": 0.6474877223372459,
+      "sensitivity": 3.810544505280402e-05,
+      "converged_iters": 100,
+      "rank": 2
+    },
+    {
+      "block_id": 10,
+      "name": "block0.layer9",
+      "num_params": 11520,
+      "eigenvalue": 0.3848779574036598,
+      "abs_eigenvalue": 0.3848779574036598,
+      "sensitivity": 3.340954491351214e-05,
+      "converged_iters": 33,
+      "rank": 3
+    },
+    {
+      "block_id": 3,
+      "name": "block0.layer2",
+      "num_params": 7488,
+      "eigenvalue": 0.23595741391181946,
+      "abs_eigenvalue": 0.23595741391181946,
+      "sensitivity": 3.1511406772411785e-05,
+      "converged_iters": 100,
+      "rank": 4
+    },
+    {
+      "block_id": 4,
+      "name": "block0.layer3",
+      "num_params": 8064,
+      "eigenvalue": 0.22544900327920914,
+      "abs_eigenvalue": 0.22544900327920914,
+      "sensitivity": 2.7957465684425737e-05,
+      "converged_iters": 100,
+      "rank": 5
+    },
+    {
+      "block_id": 24,
+      "name": "block1.layer10",
+      "num_params": 14976,
+      "eigenvalue": 0.3742958605289459,
+      "abs_eigenvalue": 0.3742958605289459,
+      "sensitivity": 2.499304624258453e-05,
+      "converged_iters": 100,
+      "rank": 6
+    },
+    {
+      "block_id": 1,
+      "name": "block0.layer0",
+      "num_params": 6336,
+      "eigenvalue": 0.1516503058373928,
+      "abs_eigenvalue": 0.1516503058373928,
+      "sensitivity": 2.393470736069962e-05,
+      "converged_iters": 100,
+      "rank": 7
+    },
+    {
+      "block_id": 19,
+      "name": "block1.layer5",
+      "num_params": 12096,
+      "eigenvalue": 0.27989910170435905,
+      "abs_eigenvalue": 0.27989910170435905,
+      "sensitivity": 2.3139806688521747e-05,
+      "converged_iters": 100,
+      "rank": 8
+    },
+    {
+      "block_id": 11,
+      "name": "block0.layer10",
+      "num_params": 12096,
+      "eigenvalue": 0.23848558962345123,
+      "abs_eigenvalue": 0.23848558962345123,
+      "sensitivity": 1.971607057072183e-05,
+      "converged_iters": 100,
+      "rank": 9
+    },
+    {
+      "block_id": 12,
+      "name": "block0.layer11",
+      "num_params": 12672,
+      "eigenvalue": 0.2400214895606041,
+      "abs_eigenvalue": 0.2400214895606041,
+      "sensitivity": 1.894108976961838e-05,
+      "converged_iters": 100,
+      "rank": 10
+    },
+    {
+      "block_id": 8,
+      "name": "block0.layer7",
+      "num_params": 10368,
+      "eigenvalue": 0.18567124009132385,
+      "abs_eigenvalue": 0.18567124009132385,
+      "sensitivity": 1.7908105718684785e-05,
+      "converged_iters": 100,
+      "rank": 11
+    },
+    {
+      "block_id": 21,
+      "name": "block1.layer7",
+      "num_params": 13248,
+      "eigenvalue": 0.2297593429684639,
+      "abs_eigenvalue": 0.2297593429684639,
+      "sensitivity": 1.7342945574310377e-05,
+      "converged_iters": 100,
+      "rank": 12
+    },
+    {
+      "block_id": 13,
+      "name": "transition0",
+      "num_params": 14112,
+      "eigenvalue": 0.19073399901390076,
+      "abs_eigenvalue": 0.19073399901390076,
+      "sensitivity": 1.351573122264036e-05,
+      "converged_iters": 100,
+      "rank": 13
+    },
+    {
+      "block_id": 28,
+      "name": "block2.layer1",
+      "num_params": 11232,
+      "eigenvalue": 0.13795538619160652,
+      "abs_eigenvalue": 0.13795538619160652,
+      "sensitivity": 1.2282352759224228e-05,
+      "converged_iters": 100,
+      "rank": 14
+    },
+    {
+      "block_id": 9,
+      "name": "block0.layer8",
+      "num_params": 10944,
+      "eigenvalue": 0.1209445670247078,
+      "abs_eigenvalue": 0.1209445670247078,
+      "sensitivity": 1.1051221402111457e-05,
+      "converged_iters": 100,
+      "rank": 15
+    },
+    {
+      "block_id": 5,
+      "name": "block0.layer4",
+      "num_params": 8640,
+      "eigenvalue": 0.08843597024679184,
+      "abs_eigenvalue": 0.08843597024679184,
+      "sensitivity": 1.0235644704489797e-05,
+      "converged_iters": 100,
+      "rank": 16
+    },
+    {
+      "block_id": 7,
+      "name": "block0.layer6",
+      "num_params": 9792,
+      "eigenvalue": 0.09997279196977615,
+      "abs_eigenvalue": 0.09997279196977615,
+      "sensitivity": 1.0209639702795767e-05,
+      "converged_iters": 100,
+      "rank": 17
+    },
+    {
+      "block_id": 27,
+      "name": "block2.layer0",
+      "num_params": 10656,
+      "eigenvalue": 0.09741523861885071,
+      "abs_eigenvalue": 0.09741523861885071,
+      "sensitivity": 9.141820440958213e-06,
+      "converged_iters": 100,
+      "rank": 18
+    },
+    {
+      "block_id": 35,
+      "name": "block2.layer8",
+      "num_params": 15264,
+      "eigenvalue": 0.1260510366410017,
+      "abs_eigenvalue": 0.1260510366410017,
+      "sensitivity": 8.258060576585541e-06,
+      "converged_iters": 100,
+      "rank": 19
+    },
+    {
+      "block_id": 34,
+      "name": "block2.layer7",
+      "num_params": 14688,
+      "eigenvalue": 0.11327885463833809,
+      "abs_eigenvalue": 0.11327885463833809,
+      "sensitivity": 7.712340321237615e-06,
+      "converged_iters": 22,
+      "rank": 20
+    },
+    {
+      "block_id": 2,
+      "name": "block0.layer1",
+      "num_params": 6912,
+      "eigenvalue": 0.052177878096699715,
+      "abs_eigenvalue": 0.052177878096699715,
+      "sensitivity": 7.54888282649012e-06,
+      "converged_iters": 100,
+      "rank": 21
+    },
+    {
+      "block_id": 33,
+      "name": "block2.layer6",
+      "num_params": 14112,
+      "eigenvalue": 0.10497806593775749,
+      "abs_eigenvalue": 0.10497806593775749,
+      "sensitivity": 7.43892190602023e-06,
+      "converged_iters": 100,
+      "rank": 22
+    },
+    {
+      "block_id": 23,
+      "name": "block1.layer9",
+      "num_params": 14400,
+      "eigenvalue": 0.10057298094034195,
+      "abs_eigenvalue": 0.10057298094034195,
+      "sensitivity": 6.984234787523747e-06,
+      "converged_iters": 100,
+      "rank": 23
+    },
+    {
+      "block_id": 25,
+      "name": "block1.layer11",
+      "num_params": 15552,
+      "eigenvalue": 0.10738630779087543,
+      "abs_eigenvalue": 0.10738630779087543,
+      "sensitivity": 6.904983782849501e-06,
+      "converged_iters": 100,
+      "rank": 24
+    },
+    {
+      "block_id": 31,
+      "name": "block2.layer4",
+      "num_params": 12960,
+      "eigenvalue": 0.0889198612421751,
+      "abs_eigenvalue": 0.0889198612421751,
+      "sensitivity": 6.86110040448882e-06,
+      "converged_iters": 42,
+      "rank": 25
+    },
+    {
+      "block_id": 32,
+      "name": "block2.layer5",
+      "num_params": 13536,
+      "eigenvalue": 0.06159017700701952,
+      "abs_eigenvalue": 0.06159017700701952,
+      "sensitivity": 4.550101729241986e-06,
+      "converged_iters": 24,
+      "rank": 26
+    },
+    {
+      "block_id": 36,
+      "name": "block2.layer9",
+      "num_params": 15840,
+      "eigenvalue": 0.06904695183038712,
+      "abs_eigenvalue": 0.06904695183038712,
+      "sensitivity": 4.359024736766863e-06,
+      "converged_iters": 100,
+      "rank": 27
+    },
+    {
+      "block_id": 30,
+      "name": "block2.layer3",
+      "num_params": 12384,
+      "eigenvalue": 0.05263053625822067,
+      "abs_eigenvalue": 0.05263053625822067,
+      "sensitivity": 4.249881803796889e-06,
+      "converged_iters": 52,
+      "rank": 28
+    },
+    {
+      "block_id": 37,
+      "name": "block2.layer10",
+      "num_params": 16416,
+      "eigenvalue": 0.06394563242793083,
+      "abs_eigenvalue": 0.06394563242793083,
+      "sensitivity": 3.8953236128125505e-06,
+      "converged_iters": 100,
+      "rank": 29
+    },
+    {
+      "block_id": 15,
+      "name": "block1.layer1",
+      "num_params": 9792,
+      "eigenvalue": 0.032178113237023354,
+      "abs_eigenvalue": 0.032178113237023354,
+      "sensitivity": 3.28616352502281e-06,
+      "converged_iters": 100,
+      "rank": 30
+    },
+    {
+      "block_id": 22,
+      "name": "block1.layer8",
+      "num_params": 13824,
+      "eigenvalue": 0.044780146330595016,
+      "abs_eigenvalue": 0.044780146330595016,
+      "sensitivity": 3.239304566738644e-06,
+      "converged_iters": 100,
+      "rank": 31
+    },
+    {
+      "block_id": 26,
+      "name": "transition1",
+      "num_params": 25992,
+      "eigenvalue": 0.07837686687707901,
+      "abs_eigenvalue": 0.07837686687707901,
+      "sensitivity": 3.0154227022575797e-06,
+      "converged_iters": 100,
+      "rank": 32
+    },
+    {
+      "block_id": 17,
+      "name": "block1.layer3",
+      "num_params": 10944,
+      "eigenvalue": 0.030414531007409096,
+      "abs_eigenvalue": 0.030414531007409096,
+      "sensitivity": 2.7791055379577023e-06,
+      "converged_iters": 100,
+      "rank": 33
+    },
+    {
+      "block_id": 6,
+      "name": "block0.layer5",
+      "num_params": 9216,
+      "eigenvalue": 0.02399151399731636,
+      "abs_eigenvalue": 0.02399151399731636,
+      "sensitivity": 2.6032458764449175e-06,
+      "converged_iters": 100,
+      "rank": 34
+    },
+    {
+      "block_id": 16,
+      "name": "block1.layer2",
+      "num_params": 10368,
+      "eigenvalue": 0.018045470118522644,
+      "abs_eigenvalue": 0.018045470118522644,
+      "sensitivity": 1.7404967321105944e-06,
+      "converged_iters": 100,
+      "rank": 35
+    },
+    {
+      "block_id": 29,
+      "name": "block2.layer2",
+      "num_params": 11808,
+      "eigenvalue": 0.02045651152729988,
+      "abs_eigenvalue": 0.02045651152729988,
+      "sensitivity": 1.7324281442496513e-06,
+      "converged_iters": 100,
+      "rank": 36
+    },
+    {
+      "block_id": 14,
+      "name": "block1.layer0",
+      "num_params": 9216,
+      "eigenvalue": 0.01222373335622251,
+      "abs_eigenvalue": 0.01222373335622251,
+      "sensitivity": 1.3263599561873384e-06,
+      "converged_iters": 100,
+      "rank": 37
+    },
+    {
+      "block_id": 18,
+      "name": "block1.layer4",
+      "num_params": 11520,
+      "eigenvalue": 0.014174912590533495,
+      "abs_eigenvalue": 0.014174912590533495,
+      "sensitivity": 1.2304611623726992e-06,
+      "converged_iters": 100,
+      "rank": 38
+    },
+    {
+      "block_id": 20,
+      "name": "block1.layer6",
+      "num_params": 12672,
+      "eigenvalue": 0.013451023027300835,
+      "abs_eigenvalue": 0.013451023027300835,
+      "sensitivity": 1.0614759333412907e-06,
+      "converged_iters": 100,
+      "rank": 39
+    },
+    {
+      "block_id": 39,
+      "name": "classifier",
+      "num_params": 2590,
+      "eigenvalue": 0.0024282370068249293,
+      "abs_eigenvalue": 0.0024282370068249293,
+      "sensitivity": 9.37543245878351e-07,
+      "converged_iters": 89,
+      "rank": 40
+    }
+  ]
+}

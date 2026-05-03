@@ -23,20 +23,14 @@ from tqdm import tqdm
 
 from data_utils import get_cifar10_loaders
 from densenet_quant import (
+    MODEL_REGISTRY,
     MyQDenseNet,
     QDenseBlock,
     QTransition,
-    densenet_bc_100_12,
-    densenet_bc_190_40,
 )
 
 RESULTS_PATH = "./results"
 os.makedirs(RESULTS_PATH, exist_ok=True)
-
-MODEL_CONSTRUCTORS = {
-    "densenet_bc_100_12": densenet_bc_100_12,
-    "densenet_bc_190_40": densenet_bc_190_40,
-}
 
 
 @dataclass
@@ -339,42 +333,64 @@ def plot_sensitivity_bar(results: List[Dict], save_path: str, title: str):
 
 
 def plot_sensitivity_heatmap(results: List[Dict], model: MyQDenseNet, save_path: str):
-    """Heatmap of sensitivities for dense layers (n_blocks x n_layers_per_block)."""
+    """Heatmap of sensitivities for dense layers (n_blocks x n_layers_per_block).
+
+    Generates two heatmaps:
+      1. S_i = λ_i / n_i  (original HAWQ metric, memory-weighted)
+      2. λ_i              (raw top eigenvalue, unweighted)
+    """
     n_blocks = len(model.blocks)
     n_layers = len(model.blocks[0].layers)
 
-    heatmap = np.full((n_blocks, n_layers), np.nan)
     result_by_name = {r["name"]: r for r in results}
 
-    for bi in range(n_blocks):
-        for li in range(n_layers):
-            key = f"block{bi}.layer{li}"
-            if key in result_by_name:
-                val = result_by_name[key]["sensitivity"]
-                heatmap[bi, li] = np.log10(val + 1e-20)
+    metrics = [
+        {
+            "key": "sensitivity",
+            "title": r"HAWQ: $S_i = \lambda_i / n_i$ (memory-weighted)",
+            "cbar_label": r"$\log_{10}(S_i)$",
+            "suffix": "_Si",
+        },
+        {
+            "key": "abs_eigenvalue",
+            "title": r"HAWQ: $\lambda_i$ (raw top eigenvalue)",
+            "cbar_label": r"$\log_{10}(\lambda_i)$",
+            "suffix": "_lambda",
+        },
+    ]
 
-    fig, ax = plt.subplots(figsize=(18, 4))
-    im = ax.imshow(heatmap, aspect="auto", cmap="YlOrRd", interpolation="nearest")
+    for m in metrics:
+        heatmap = np.full((n_blocks, n_layers), np.nan)
+        for bi in range(n_blocks):
+            for li in range(n_layers):
+                key = f"block{bi}.layer{li}"
+                if key in result_by_name:
+                    val = result_by_name[key][m["key"]]
+                    heatmap[bi, li] = np.log10(val + 1e-20)
 
-    ax.set_yticks(range(n_blocks))
-    ax.set_yticklabels([f"Dense Block {i}" for i in range(n_blocks)])
-    ax.set_xticks(range(n_layers))
-    ax.set_xticklabels(range(n_layers), fontsize=8)
-    ax.set_xlabel("Layer index within dense block")
-    ax.set_title(r"HAWQ Hessian Sensitivity ($\log_{10} S_i$) -- DenseLayer blocks")
+        fig, ax = plt.subplots(figsize=(18, 4))
+        im = ax.imshow(heatmap, aspect="auto", cmap="YlOrRd", interpolation="nearest")
 
-    cbar = fig.colorbar(im, ax=ax, fraction=0.015, pad=0.01)
-    cbar.set_label(r"$\log_{10}(S_i)$")
+        ax.set_yticks(range(n_blocks))
+        ax.set_yticklabels([f"Dense Block {i}" for i in range(n_blocks)])
+        ax.set_xticks(range(n_layers))
+        ax.set_xticklabels(range(n_layers), fontsize=8)
+        ax.set_xlabel("Layer index within dense block")
+        ax.set_title(f"{m['title']} -- DenseLayer blocks")
 
-    plt.tight_layout()
-    plt.savefig(save_path, dpi=150, bbox_inches="tight")
-    plt.close()
-    print(f"Saved heatmap: {save_path}")
+        cbar = fig.colorbar(im, ax=ax, fraction=0.015, pad=0.01)
+        cbar.set_label(m["cbar_label"])
+
+        plt.tight_layout()
+        out_path = save_path.replace(".png", f"{m['suffix']}.png")
+        plt.savefig(out_path, dpi=150, bbox_inches="tight")
+        plt.close()
+        print(f"Saved heatmap: {out_path}")
 
 
 @click.command()
 @click.option("--checkpoint", type=str, required=True, help="Path to pretrained float model checkpoint")
-@click.option("--model", "model_fn", type=click.Choice(list(MODEL_CONSTRUCTORS.keys())),
+@click.option("--model", "model_fn", type=click.Choice(list(MODEL_REGISTRY.keys())),
               default="densenet_bc_100_12", help="Model architecture")
 @click.option("--num-iters", type=int, default=100, help="Max power iteration steps per block")
 @click.option("--num-batches", type=int, default=2, help="Number of training batches for Hessian estimation")
@@ -408,7 +424,7 @@ def main(checkpoint, model_fn, num_iters, num_batches, batch_size, tol, seed, de
 
     # Load model
     print(f"Loading model {model_fn} from {checkpoint}")
-    model = MODEL_CONSTRUCTORS[model_fn](num_classes=10)
+    model = MODEL_REGISTRY[model_fn](num_classes=10)
     ckpt = torch.load(checkpoint, map_location=device, weights_only=False)
     model.load_state_dict(ckpt)
     model = model.to(device)
